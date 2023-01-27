@@ -1,0 +1,27 @@
+LOCAL
+diff -r -q /var/www/html/orangutan/src/main/kotlin/ /var/www/html/orangutan_local/orangutan/src/main/kotlin/
+
+/usr/bin/rsync -au --delete /var/www/html/orangutan/ /var/www/html/orangutan_local/orangutan/
+
+/var/www/html/orangutan_local/orangutan/gradlew --stop -p /var/www/html/orangutan_local/orangutan/ > /var/www/html/orangutan_local/run/log.txt 2>&1’
+nohup /var/www/html/orangutan_local/orangutan/gradlew bootRun -p /var/www/html/orangutan_local/orangutan/ > /var/www/html/orangutan_local/run/log.txt 2>&1 &
+
+echo $! > /var/www/html/orangutan_local/run/pid.file
+
+
+LIVE
+#####check difference between project source and target directoreis
+diff -r -q /home/actions-runner/orangutan/orangutan/orangutan/src/main/kotlin/ /home/orangutan_local/orangutan/src/main/kotlin/
+
+######sync files from source into target project directory
+/usr/bin/rsync -auv --delete /home/actions-runner/orangutan/orangutan/orangutan/ /home/orangutan_local/orangutan/
+
+######stop already running spring boot application
+/home/orangutan_local/orangutan/gradlew --stop -p /home/orangutan_local/orangutan/ > /home/orangutan_local/run/log.txt 2>&1
+
+######start springboot application in background and append the logs into the log.txt file
+nohup /home/orangutan_local/orangutan/gradlew bootRun -p /home/orangutan_local/orangutan/ > /home/orangutan_local/run/log.txt 2>&1 &
+
+######add the last running proccessID into the pid.file. It could be used to kill the gradle server later.
+echo $! > /home/orangutan_local/run/pid.file
+
